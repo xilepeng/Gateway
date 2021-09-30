@@ -3,10 +3,9 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 type ResponseCode int
