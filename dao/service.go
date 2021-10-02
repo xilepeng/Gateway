@@ -5,7 +5,9 @@ import (
 	"github.com/e421083458/gateway/public"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"net/http/httptest"
+	"strings"
 	"sync"
 )
 
@@ -63,31 +65,31 @@ func (s *ServiceManager) GetGrpcServiceList() []*ServiceDetail {
 	return list
 }
 
-//func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*ServiceDetail, error) {
-//	//1、前缀匹配 /abc ==> serviceSlice.rule
-//	//2、域名匹配 www.test.com ==> serviceSlice.rule
-//	//host c.Request.Host
-//	//path c.Request.URL.Path
-//	host := c.Request.Host
-//	host = host[0:strings.Index(host, ":")]
-//	path := c.Request.URL.Path
-//	for _, serviceItem := range s.ServiceSlice {
-//		if serviceItem.Info.LoadType != public.LoadTypeHTTP {
-//			continue
-//		}
-//		if serviceItem.HTTPRule.RuleType == public.HTTPRuleTypeDomain {
-//			if serviceItem.HTTPRule.Rule == host {
-//				return serviceItem, nil
-//			}
-//		}
-//		if serviceItem.HTTPRule.RuleType == public.HTTPRuleTypePrefixURL {
-//			if strings.HasPrefix(path, serviceItem.HTTPRule.Rule) {
-//				return serviceItem, nil
-//			}
-//		}
-//	}
-//	return nil, errors.New("not matched service")
-//}
+func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*ServiceDetail, error) {
+	//1、前缀匹配 /abc ==> serviceSlice.rule
+	//2、域名匹配 www.test.com ==> serviceSlice.rule
+	//host c.Request.Host
+	//path c.Request.URL.Path
+	host := c.Request.Host
+	host = host[0:strings.Index(host, ":")]
+	path := c.Request.URL.Path
+	for _, serviceItem := range s.ServiceSlice {
+		if serviceItem.Info.LoadType != public.LoadTypeHTTP {
+			continue
+		}
+		if serviceItem.HTTPRule.RuleType == public.HTTPRuleTypeDomain {
+			if serviceItem.HTTPRule.Rule == host {
+				return serviceItem, nil
+			}
+		}
+		if serviceItem.HTTPRule.RuleType == public.HTTPRuleTypePrefixURL {
+			if strings.HasPrefix(path, serviceItem.HTTPRule.Rule) {
+				return serviceItem, nil
+			}
+		}
+	}
+	return nil, errors.New("not matched service")
+}
 
 func (s *ServiceManager) LoadOnce() error {
 	s.init.Do(func() {

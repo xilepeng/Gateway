@@ -111,3 +111,6 @@ func (adminlogin *AdminController) ChangePwd(c *gin.Context) {
 	middleware.ResponseSuccess(c, "")
 }
 
+
+
+
